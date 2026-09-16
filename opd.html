@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sadia Clinic - OPD System</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif}
+body{background:#f1f5f9}
+header{background:#fff;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 10px #0001;position:sticky;top:0}
+.logo{display:flex;align-items:center;gap:10px}
+.logo img{width:45px;height:45px;border-radius:50%;object-fit:cover}
+.tabs{max-width:1100px;margin:16px auto;display:flex;gap:8px;padding:0 10px;flex-wrap:wrap}
+.tab{padding:10px 16px;background:#fff;border-radius:20px;cursor:pointer;font-weight:700;font-size:13px;box-shadow:0 2px 6px #0001}
+.tab.active{background:#0a4eb5;color:#fff}
+.card{background:#fff;max-width:1100px;margin:0 auto 16px;padding:18px;border-radius:14px;box-shadow:0 4px 15px #0001}
+input,select,textarea{width:100%;padding:11px;border:1px solid #cbd5e1;border-radius:8px;margin:6px 0;font-size:14px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:700px){.grid{grid-template-columns:1fr}}
+.btn{background:#0a4eb5;color:#fff;border:none;padding:12px 16px;border-radius:8px;font-weight:700;cursor:pointer}
+.btn-g{background:#16a34a}.btn-r{background:#ef4444}
+table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}
+th,td{border:1px solid #e2e8f0;padding:8px;text-align:left;vertical-align:top}
+th{background:#0a1930;color:#fff}
+.img-preview{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.img-preview img{width:80px;height:80px;object-fit:cover;border-radius:8px;border:1px solid #e2e8f0}
+.hidden{display:none}
+.search-box{max-width:500px;margin:20px auto;display:flex;gap:8px}
+</style>
+</head>
+<body>
+
+<header>
+<div class="logo"><img src="logo.png" onerror="this.style.display='none'"><div><b style="color:#0a2a7a">Sadia Clinic KHI</b><br><span style="font-size:11px;color:#64748b">OPD Management System</span></div></div>
+<div><a href="index.html" style="font-size:12px;text-decoration:none;background:#e0e7ff;padding:6px 12px;border-radius:20px;color:#0a2a7a;font-weight:700">Main Site</a></div>
+</header>
+
+<div class="tabs">
+<div class="tab active" onclick="showTab('add')">➕ New OPD Entry (Admin)</div>
+<div class="tab" onclick="showTab('list')">📋 All OPD Records</div>
+<div class="tab" onclick="showTab('patient')">🔍 Patient Check (For Patient)</div>
+</div>
+
+<!-- ADD TAB -->
+<div id="tab-add" class="card">
+<h3>New OPD Entry</h3>
+<div id="adminLogin"><p style="font-size:13px;margin:8px 0">Admin Login (ID: doctor / Pass: sadia123)</p><div class="grid"><input id="aUser" placeholder="ID"><input id="aPass" type="password" placeholder="Password"></div><button class="btn" onclick="adminLogin()">Login</button></div>
+
+<div id="opdForm" class="hidden">
+<div class="grid">
+<input id="pName" placeholder="1. Patient Name *">
+<input id="pAge" placeholder="2. Age">
+<input id="pDate" type="date">
+<input id="pCell" placeholder="4. Patient Cell No (0300-xxxxxxx) *">
+</div>
+<input id="pDiag" placeholder="5. Diagnosis">
+<textarea id="pPres" rows="3" placeholder="6. Prescription (Dawaiyan)"></textarea>
+<div class="grid">
+<select id="pConsult"><option value="">7. Consultant Select Karein</option><option>Dr. M. Zeeshan - General Disease</option><option>Dr. Hina Sadia - Gynae</option><option>Dr. Amir Ali Qureshi - Neuro Physician - 5 PM to 10 PM</option></select>
+<input id="pFee" type="number" placeholder="8. Fee Charges">
+<input id="pService" type="number" placeholder="9. Service Charges">
+<input id="pFollow" type="date" placeholder="10. Follow up Date">
+</div>
+<label style="font-size:13px;font-weight:700;margin-top:8px;display:block">Test Reports Images (4 tak)</label>
+<input id="pImages" type="file" accept="image/*" multiple>
+<div id="imgPrev" class="img-preview"></div>
+<div style="margin-top:12px;display:flex;gap:8px"><button class="btn btn-g" onclick="saveOPD()">💾 Save OPD Record</button><button class="btn" onclick="clearForm()" style="background:#64748b">Clear</button></div>
+<div id="saveMsg" class="hidden" style="background:#dcfce7;color:#166534;padding:10px;border-radius:8px;margin-top:10px;font-weight:700;text-align:center">✅ Saved!</div>
+</div>
+</div>
+
+<!-- LIST TAB -->
+<div id="tab-list" class="card hidden">
+<h3>All OPD Records <span id="totalCount" style="font-size:12px;background:#e0e7ff;padding:4px 10px;border-radius:20px;margin-left:8px"></span></h3>
+<input id="searchAll" placeholder="Search by Name / Cell No / Consultant..." onkeyup="renderList()" style="margin-top:10px">
+<div style="overflow:auto"><table id="opdTable"><tr><th>#</th><th>Date</th><th>Patient</th><th>Cell</th><th>Consultant</th><th>Diagnosis</th><th>Fee</th><th>Follow-up</th><th>Reports</th><th>Action</th></tr></table></div>
+<button class="btn" style="margin-top:12px;background:#0a1930" onclick="exportData()">⬇️ Export Backup (JSON)</button>
+</div>
+
+<!-- PATIENT TAB -->
+<div id="tab-patient" class="card hidden">
+<h3 style="text-align:center">🔍 Patient - Apna Record Check Karein</h3>
+<p style="text-align:center;font-size:13px;color:#64748b;margin:6px 0">Apna Mobile Number likh kar Search karein</p>
+<div class="search-box"><input id="patSearchCell" placeholder="0300-XXXXXXX"><button class="btn" onclick="patientSearch()">Search</button></div>
+<div id="patResult"></div>
+</div>
+
+<script>
+let imagesBase64=[];
+document.getElementById('pImages').addEventListener('change', function(e){
+  imagesBase64=[]; document.getElementById('imgPrev').innerHTML='';
+  const files=[...e.target.files].slice(0,4);
+  files.forEach(f=>{
+    const r=new FileReader();
+    r.onload=ev=>{
+      imagesBase64.push(ev.target.result);
+      const im=document.createElement('img'); im.src=ev.target.result;
+      document.getElementById('imgPrev').appendChild(im);
+    };
+    r.readAsDataURL(f);
+  });
+});
+
+function showTab(t){
+  document.querySelectorAll('.tab').forEach((el,i)=>el.classList.toggle('active', ['add','list','patient'][i]===t));
+  document.getElementById('tab-add').classList.toggle('hidden', t!=='add');
+  document.getElementById('tab-list').classList.toggle('hidden', t!=='list');
+  document.getElementById('tab-patient').classList.toggle('hidden', t!=='patient');
+  if(t==='list') renderList();
+}
+function adminLogin(){
+  if(document.getElementById('aUser').value==='doctor' && document.getElementById('aPass').value==='sadia123'){
+    document.getElementById('adminLogin').classList.add('hidden');
+    document.getElementById('opdForm').classList.remove('hidden');
+    renderList();
+  } else alert('ID: doctor / Pass: sadia123');
+}
+let editIndex=-1;
+function saveOPD(){
+  const rec={
+    name:document.getElementById('pName').value.trim(),
+    age:document.getElementById('pAge').value.trim(),
+    date:document.getElementById('pDate').value || new Date().toISOString().slice(0,10),
+    cell:document.getElementById('pCell').value.trim(),
+    diag:document.getElementById('pDiag').value.trim(),
+    pres:document.getElementById('pPres').value.trim(),
+    consult:document.getElementById('pConsult').value,
+    fee:document.getElementById('pFee').value,
+    service:document.getElementById('pService').value,
+    follow:document.getElementById('pFollow').value,
+    images:imagesBase64,
+    created:new Date().toLocaleString()
+  };
+  if(!rec.name ||!rec.cell){ alert('Name aur Cell No lazmi hai'); return; }
+  let data=JSON.parse(localStorage.getItem('sadia_opd')||'[]');
+  if(editIndex>=0){ data[editIndex]=rec; editIndex=-1; } else { data.unshift(rec); }
+  localStorage.setItem('sadia_opd', JSON.stringify(data));
+  document.getElementById('saveMsg').classList.remove('hidden');
+  setTimeout(()=>document.getElementById('saveMsg').classList.add('hidden'),3000);
+  clearForm(); renderList();
+}
+function clearForm(){
+  ['pName','pAge','pCell','pDiag','pPres','pFee','pService'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('pConsult').value=''; document.getElementById('imgPrev').innerHTML=''; imagesBase64=[]; document.getElementById('pImages').value='';
+}
+function renderList(){
+  const q=(document.getElementById('searchAll').value||'').toLowerCase();
+  let data=JSON.parse(localStorage.getItem('sadia_opd')||'[]');
+  document.getElementById('totalCount').innerText=data.length+' Records';
+  let filtered=data.filter((r,i)=> (r.name+r.cell+r.consult+r.diag).toLowerCase().includes(q));
+  let html='<tr><th>#</th><th>Date</th><th>Patient</th><th>Cell</th><th>Consultant</th><th>Diagnosis</th><th>Fee</th><th>Follow-up</th><th>Reports</th><th>Action</th></tr>';
+  filtered.forEach((r,idx)=>{
+    const realIdx=data.indexOf(r);
+    html+=`<tr><td>${idx+1}</td><td>${r.date}</td><td><b>${r.name}</b><br><small>${r.age}Y</small></td><td>${r.cell}</td><td>${r.consult}</td><td>${r.diag}<br><small style="color:#16a34a">${r.pres.slice(0,60)}</small></td><td>${r.fee}+${r.service}</td><td>${r.follow||'-'}</td><td>${r.images?r.images.length+' imgs':''}</td><td><button onclick="viewRec(${realIdx})">View</button> <button onclick="delRec(${realIdx})" style="color:red">Del</button></td></tr>`;
+  });
+  document.getElementById('opdTable').innerHTML=html || '<tr><td colspan=10 style="text-align:center;color:#64748b">Koi record nahi</td></tr>';
+}
+function viewRec(i){
+  let data=JSON.parse(localStorage.getItem('sadia_opd')||'[]')[i];
+  showTab('patient');
+  document.getElementById('patSearchCell').value=data.cell;
+  patientSearch();
+}
+function delRec(i){
+  if(!confirm('Delete karna hai?')) return;
+  let data=JSON.parse(localStorage.getItem('sadia_opd')||'[]'); data.splice(i,1);
+  localStorage.setItem('sadia_opd', JSON.stringify(data)); renderList();
+}
+function patientSearch(){
+  const cell=document.getElementById('patSearchCell').value.trim();
+  if(!cell){ alert('Cell number likhein'); return; }
+  let data=JSON.parse(localStorage.getItem('sadia_opd')||'[]').filter(r=>r.cell.includes(cell));
+  if(!data.length){ document.getElementById('patResult').innerHTML='<p style="text-align:center;color:#ef4444;padding:20px">Koi record nahi mila is number par</p>'; return; }
+  let html='';
+  data.forEach(r=>{
+    html+=`<div style="border:1px solid #e2e8f0;border-radius:12px;padding:14px;margin:12px 0;background:#fff">
+    <div style="display:flex;justify-content:space-between;flex-wrap:wrap"><b style="font-size:16px">${r.name} (${r.age}Y)</b><span style="font-size:12px;background:#e0e7ff;padding:4px 10px;border-radius:20px">${r.date}</span></div>
+    <p style="font-size:13px;margin:6px 0"><b>Consultant:</b> ${r.consult} | <b>Fee:</b> ${r.fee} + Service ${r.service} | <b>Follow-up:</b> ${r.follow||'-'}</p>
+    <p style="font-size:13px"><b>Diagnosis:</b> ${r.diag}</p>
+    <p style="font-size:13px;background:#f0fdf4;padding:8px;border-radius:8px"><b>Prescription:</b> ${r.pres}</p>
+    ${r.images && r.images.length? `<p style="font-size:13px;margin-top:8px"><b>Test Reports:</b></p><div class="img-preview">${r.images.map(im=>`<a href="${im}" target="_blank"><img src="${im}"></a>`).join('')}</div>` : '<p style="font-size:12px;color:#64748b">No Reports</p>'}
+    </div>`;
+  });
+  document.getElementById('patResult').innerHTML=html;
+}
+function exportData(){
+  const data=localStorage.getItem('sadia_opd')||'[]';
+  const blob=new Blob([data],{type:'application/json'});
+  const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='sadia_opd_backup_'+new Date().toISOString().slice(0,10)+'.json'; a.click();
+}
+document.getElementById('pDate').valueAsDate=new Date();
+</script>
+</body>
+</html>
