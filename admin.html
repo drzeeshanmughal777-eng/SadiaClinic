@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Admin Login - Sadia Clinic</title>
+<style>body{font-family:Arial;background:#0a1840;margin:0;display:flex;align-items:center;justify-content:center;min-height:100vh}.card{background:#fff;padding:30px;border-radius:18px;box-shadow:0 10px 40px #0003;max-width:380px;width:90%;text-align:center}h2{color:#0a2ea8}input{width:100%;padding:12px;margin:12px 0;border:1.5px solid #cbd5e1;border-radius:10px;outline:none}input:focus{border-color:#0a2ea8}.btn{width:100%;background:#0a2ea8;color:#fff;border:none;padding:12px;border-radius:10px;font-weight:800;cursor:pointer}.hide{display:none}.link{display:block;text-decoration:none;padding:12px;border-radius:10px;font-weight:800;margin:10px 0}.blue{background:#0a2ea8;color:#fff}.green{background:#25D366;color:#fff}#msg{color:red;font-size:13px;margin-top:8px;display:none}</style>
+</head>
+<body>
+<div class="card" id="loginBox">
+<h2>🔒 Admin Login</h2>
+<p style="color:#666;font-size:13px">Sadia Clinic KHI - Only Owner</p>
+<input type="password" id="pass" placeholder="Password likhein">
+<button class="btn" onclick="check()">Login</button>
+<p id="msg">❌ Galat password!</p>
+<small style="color:#999">Hint: Sadia123</small>
+</div>
+
+<div class="card hide" id="adminBox">
+<h2>✅ Welcome Zeeshan Bhai</h2>
+<p style="color:#555">Bookings yahan se dekhein</p>
+<a class="link blue" href="https://app.netlify.com/projects/sadiaclinic/forms" target="_blank">📋 Saari Bookings Dekhein</a>
+<a class="link green" href="https://wa.me/923032872740" target="_blank">💬 WhatsApp</a>
+<a class="link" style="background:#eef2ff;color:#0a2ea8" href="/">🏠 Website</a>
+<button class="btn" style="background:#ff3b3b;margin-top:10px" onclick="logout()">Logout</button>
+</div>
+
+<script>
+function check(){
+  let p = document.getElementById('pass').value;
+  if(p === 'Sadia123'){
+    document.getElementById('loginBox').classList.add('hide');
+    document.getElementById('adminBox').classList.remove('hide');
+    localStorage.setItem('sadia_admin','ok');
+  } else {
+    document.getElementById('msg').style.display='block';
+  }
+}
+function logout(){
+  localStorage.removeItem('sadia_admin');
+  location.reload();
+}
+if(localStorage.getItem('sadia_admin')==='ok'){
+  document.getElementById('loginBox').classList.add('hide');
+  document.getElementById('adminBox').classList.remove('hide');
+}
+</script>
+</body>
+</html>
