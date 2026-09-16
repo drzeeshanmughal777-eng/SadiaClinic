@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin - Sadia Clinic</title>
+<style>
+body{font-family:Inter,sans-serif;background:#f1f5f9;margin:0;padding:20px}
+.box{max-width:900px;margin:auto;background:#fff;padding:20px;border-radius:12px;box-shadow:0 4px 15px #0001}
+h2{color:#0a2a7a;text-align:center}
+input{width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:8px;margin:8px 0}
+.btn{background:#0a4eb5;color:#fff;border:none;padding:12px;width:100%;border-radius:8px;font-weight:700;cursor:pointer}
+table{width:100%;border-collapse:collapse;margin-top:15px;font-size:13px}
+th,td{border:1px solid #e2e8f0;padding:8px;text-align:left}
+th{background:#0a2a7a;color:#fff}
+#panel{display:none}
+</style>
+</head>
+<body>
+<div class="box">
+<h2>🔒 Sadia Clinic - Admin Login</h2>
+<div id="loginBox">
+<input id="user" placeholder="Username (doctor)">
+<input id="pass" type="password" placeholder="Password (sadia123)">
+<button class="btn" onclick="login()">Login</button>
+<p style="text-align:center;font-size:12px;color:#64748b;margin-top:10px"><a href="index.html">← Back to Website</a></p>
+</div>
+
+<div id="panel">
+<h3>📋 Recent Bookings (Netlify Forms par bhi check karein)</h3>
+<p style="font-size:12px;background:#e0f2fe;padding:8px;border-radius:6px">Sab bookings asal me yahan milengi: <a href="https://app.netlify.com/projects/sadiaclinic/forms" target="_blank">Netlify Forms Dashboard</a></p>
+<div style="overflow:auto"><table id="tbl"><tr><th>Name</th><th>Phone</th><th>Doctor</th><th>Problem</th><th>TrxID</th><th>Time</th></tr></table></div>
+<button class="btn" style="background:#ef4444;margin-top:15px" onclick="localStorage.clear();location.reload()">Clear Local Data</button>
+</div>
+</div>
+
+<script>
+function login(){
+ if(document.getElementById('user').value==='doctor' && document.getElementById('pass').value==='sadia123'){
+   document.getElementById('loginBox').style.display='none';
+   document.getElementById('panel').style.display='block';
+   loadData();
+ } else { alert('Galat ID / Password! ID: doctor , Pass: sadia123'); }
+}
+function loadData(){
+ // This will show bookings if they were made on same device (demo)
+ // Real bookings are in Netlify Forms
+ const tbl=document.getElementById('tbl');
+ tbl.innerHTML='<tr><th>Name</th><th>Phone</th><th>Doctor</th><th>Problem</th><th>TrxID</th><th>Time</th></tr><tr><td colspan=6 style="text-align:center;color:#64748b">Asal Bookings Netlify Forms Dashboard par ayengi. Local demo empty hai.</td></tr>';
+}
+</script>
+</body>
+</html>
